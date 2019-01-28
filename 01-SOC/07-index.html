@@ -35,11 +35,11 @@
 			};
 
 			var _changeListeners = {
-				basic : null,
-				hra : null,
-				da : null,
-				tax : null,
-				salary : null
+				basic : [],
+				hra : [],
+				da : [],
+				tax : [],
+				salary : []
 			}
 
 			this.get = function(attrName){
@@ -49,14 +49,19 @@
 			this.set = function(attrName, value){
 				if (_data[attrName] === value) return;
 				_data[attrName] = value;
-
-				if (typeof _changeListeners[attrName] === 'function')
-					_changeListeners[attrName]();
-
+				triggerChange(attrName);
 			};
+			
+			function triggerChange(attrName){
+				var attrChangeListeners = _changeListeners[attrName];
+				attrChangeListeners.forEach(function(listenerFn){
+					if (typeof listenerFn === 'function')
+						listenerFn();
+				});
+			}
 
 			this.subscribe = function(attrName, listenerFn){
-				_changeListeners[attrName] = listenerFn;
+				_changeListeners[attrName].push(listenerFn);
 			};
 		}
 
