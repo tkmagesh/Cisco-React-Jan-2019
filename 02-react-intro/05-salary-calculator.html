@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Salary Calculator</title>
+	<style>
+		body{
+			margin-left: 50px;
+		}
+		label{
+			display: block;
+		}
+		.field{
+			margin-bottom: 10px;
+		}
+		td{
+			padding: 10px;
+			font-size: 18pt;
+		}
+	</style>
+	<script src="react.development.js"></script>
+	<script src="react-dom.development.js"></script>
+	<script src="babel.min.js"></script>
+	<script type="text/babel">
+		class SalaryCalculator extends React.Component{
+			render(){
+				let { model } = this.props;
+				let { basic, hra, da, tax, salary } = model.toJSON();
+				return(
+					<section>
+						<div className="field">
+							<label htmlFor="">Basic :</label>
+							<input type="number" onChange={ evt => model.set('basic', evt.target.valueAsNumber) }/>
+						</div>
+						<div className="field">
+							<label htmlFor="">HRA :</label>
+							<input type="number" onChange={ evt => model.set('hra', evt.target.valueAsNumber) }/>
+						</div>
+						<div className="field">
+							<label htmlFor="">DA :</label>
+							<input type="number" onChange={ evt => model.set('da', evt.target.valueAsNumber) }/>
+						</div>
+						<div className="field">
+							<label htmlFor="">Tax :</label>
+							<input type="range" min="0" max="30" defaultValue="0" onChange={ evt => model.set('tax', evt.target.valueAsNumber) }/>
+						</div>
+						<div className="field">
+							<input type="button" value="Calculate" onClick={ (evt) => model.calculate() } />
+						</div>
+						<div className="field">
+							<table>
+								<tbody>
+									<tr>
+										<td id="tdBasic">{basic}</td>
+										<td id="tdHra">{hra}</td>
+										<td id="tdDa">{da}</td>
+										<td id="tdTax">{tax}</td>
+										<td id="tdSalary">{salary}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</section>
+				)
+			}
+		}
+
+		function SalaryCalculatorModel(){
+			var _data = {
+				basic : 0,
+				hra : 0,
+				da : 0,
+				tax : 0,
+				salary : 0
+			};
+
+			var _changeListeners = [];
+
+			this.get = function(attrName){
+				return _data[attrName];
+			};
+
+			this.set = function(attrName, value){
+				if (_data[attrName] === value) return;
+				_data[attrName] = value;
+				triggerChange();
+			};
+			
+			function triggerChange(){
+				_changeListeners.forEach(function(listenerFn){
+					if (typeof listenerFn === 'function')
+						listenerFn();
+				});
+			}
+
+			this.subscribe = function(listenerFn){
+				_changeListeners.push(listenerFn);
+			};
+
+			this.toJSON = function(){
+				return {
+					basic : _data.basic,
+					hra : _data.hra,
+					da : _data.da,
+					tax : _data.tax,
+					salary : _data.salary
+				};
+			};
+		}
+
+		//behavior
+		SalaryCalculatorModel.prototype.calculate = function() {
+			var gross = this.get('basic') + this.get('hra') + this.get('da');
+			var net = gross * ((100-this.get('tax'))/100);
+			this.set('salary',net);
+		};
+
+		let model = new SalaryCalculatorModel();
+
+		function renderCalculator(){
+			ReactDOM.render(<SalaryCalculator model={model}/>,
+				document.getElementById('root'));
+		}
+		renderCalculator();
+		model.subscribe(renderCalculator);
+		
+	</script>
+</head>
+<body>
+	<h1>Salary Calculator</h1>
+	<hr>
+	<div id="root"></div>
+</body>
+</html>
