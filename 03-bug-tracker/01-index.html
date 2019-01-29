@@ -48,14 +48,51 @@
 	<script src="react-dom.development.js"></script>
 	<script src="babel.min.js"></script>
 	<script type="text/babel">
+		class EventEmitter{
+			_listeners = [];
+
+			subscribe(listenerFn){
+				this._listeners.push(listenerFn);
+			}
+
+			triggerChange(){
+				this._listeners.forEach(listenerFn => listenerFn());
+			}
+		}
+
+
+		class BugsCollectionModel extends EventEmitter{
+			_list = [];
+
+			addNew(bugName){
+				this._list.push(bugName);
+				this.triggerChange();
+			}
+
+			getAll(){
+				return [...this._list];
+			}
+		}
+
+
 		class BugTracker extends React.Component{
+			state = { newBugName : '' };
+			onAddNewClick = () => {
+				this.props.bugsCollection.addNew(this.state.newBugName);
+			}
 			render(){
+				let bugs = this.props.bugsCollection.getAll();
+				let bugItems = bugs.map((bug, index) => (
+					<li key={index}>
+						<span className="bugname">{bug}</span>
+					</li>
+				))
 				return(
 					<div>
 						<section className="stats">
 							<span className="closed">1</span>
 							<span> / </span>
-							<span>2</span>
+							<span>{bugs.length}</span>
 						</section>
 						<section className="sort">
 							<label htmlFor="">Order By :</label>
@@ -68,17 +105,12 @@
 						</section>
 						<section className="edit">
 							<label htmlFor="">Bug Name :</label>
-							<input type="text" />
-							<input type="button" value="Add New" />
+							<input type="text" onChange={ evt => this.setState({newBugName : evt.target.value})} />
+							<input type="button" value="Add New" onClick={this.onAddNewClick} />
 						</section>
 						<section className="list">
 							<ol>
-								<li>
-									<span className="bugname">[This is bug - 1]</span>
-								</li>
-								<li>
-									<span className="bugname closed">[This is bug - 2]</span>
-								</li>
+								{bugItems}
 							</ol>
 							<input type="button" value="Remove Closed" />
 						</section>
@@ -87,8 +119,14 @@
 			}
 		}
 
-		ReactDOM.render(<BugTracker/>,
-			document.getElementById('root'));
+		let bugsCollectionModel = new BugsCollectionModel();
+
+		function renderApp(){
+			ReactDOM.render(<BugTracker bugsCollection={bugsCollectionModel}/>,
+				document.getElementById('root'));
+		}
+		renderApp();
+		bugsCollectionModel.subscribe(renderApp);
 	</script>
 </head>
 <body>
