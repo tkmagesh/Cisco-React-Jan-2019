@@ -66,6 +66,7 @@
 
 			addNew(bugName){
 				let newBug = new BugModel(bugName);
+				newBug.subscribe()
 				this._list.push(newBug);
 				this.triggerChange();
 			}
@@ -73,9 +74,19 @@
 			getAll(){
 				return [...this._list];
 			}
+
+			removeClosed(){
+				this._list = this._list.filter(bug => !bug.isClosed);
+				this.triggerChange();
+			}
+
+			toggle(bug){
+				bug.isClosed = !bug.isClosed;
+				this.triggerChange();
+			}
 		}
 
-		class BugModel{
+		class BugModel extends EventEmitter{
 			name = '';
 			isClosed = false;
 
@@ -85,6 +96,23 @@
 
 			toggle(){
 				this.isClosed = !this.isClosed;
+				this.triggerChange();
+			}
+		}
+
+		class BugItem extends React.Component{
+			onBugNameClick = () => {
+				this.props.bug.toggle();
+				console.log(this.props.bug);
+			}
+			render(){
+				return(
+					<li >
+						<span className="bugname" onClick={this.onBugNameClick}>
+							{JSON.stringify(this.props.bug)}
+						</span>
+					</li>
+				)
 			}
 		}
 
@@ -93,17 +121,15 @@
 			onAddNewClick = () => {
 				this.props.bugsCollection.addNew(this.state.newBugName);
 			}
-			onBugNameClick = () => {
-				console.log('a bug is clicked');
+
+			onRemoveClosedClick = () => {
+				this.props.bugsCollection.removeClosed();
 			}
+			
 			render(){
 				let bugs = this.props.bugsCollection.getAll();
 				let bugItems = bugs.map((bug, index) => (
-					<li key={index}>
-						<span className="bugname" onClick={this.onBugNameClick}>
-							{JSON.stringify(bug)}
-						</span>
-					</li>
+					<BugItem key={index} bug={bug} />
 				))
 				return(
 					<div>
@@ -130,7 +156,7 @@
 							<ol>
 								{bugItems}
 							</ol>
-							<input type="button" value="Remove Closed" />
+							<input type="button" value="Remove Closed" onClick={this.onRemoveClosedClick}/>
 						</section>
 					</div>
 				)
