@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Bug Tracker</title>
+	<style>
+		body{
+			margin-left: 50px;
+		}
+		section{
+			margin-bottom: 10px;
+		}
+		.stats, .bugname{
+			font-size: 18pt;
+		}
+		.closed{
+			color : red;
+			text-decoration : line-through;
+			font-style : italic;
+		}
+		.bugname{
+			cursor: pointer;
+		}
+		ol{
+			list-style: none;
+			width : 500px;
+			-webkit-padding-start : 0px;
+		}
+		li{
+			border : 2px solid gray;
+			margin-bottom: 10px;
+			background-color: #e7e7e7;
+			padding: 10px;
+			border-radius: 5px;
+		}
+	</style>
+	<script type="text/usecases">
+		1. add new bugs
+		2. list the bugs
+		3. toggle the 'closed' status of any bug
+		4. remove closed bugs
+		5. display statistics (# of closed bugs / total # of bugs)
+		6. sort the bugs
+		7. persist the bugs in the server
+		8. make the bugs accessible using unique urls
+	</script>
+	<script src="react.development.js"></script>
+	<script src="react-dom.development.js"></script>
+	<script src="babel.min.js"></script>
+	<script type="text/babel">
+		class BugTracker extends React.Component{
+			render(){
+				return(
+					<div>
+						<section className="stats">
+							<span className="closed">1</span>
+							<span> / </span>
+							<span>2</span>
+						</section>
+						<section className="sort">
+							<label htmlFor="">Order By :</label>
+							<select>
+								<option value=""></option>
+								<option value=""></option>
+							</select>
+							<label htmlFor="">Descending ? :</label>
+							<input type="checkbox" />
+						</section>
+						<section className="edit">
+							<label htmlFor="">Bug Name :</label>
+							<input type="text" />
+							<input type="button" value="Add New" />
+						</section>
+						<section className="list">
+							<ol>
+								<li>
+									<span className="bugname">[This is bug - 1]</span>
+								</li>
+								<li>
+									<span className="bugname closed">[This is bug - 2]</span>
+								</li>
+							</ol>
+							<input type="button" value="Remove Closed" />
+						</section>
+					</div>
+				)
+			}
+		}
+
+		ReactDOM.render(<BugTracker/>,
+			document.getElementById('root'));
+	</script>
+</head>
+<body>
+	<h1>Bug Tracker</h1>
+	<hr>
+	<div id="root"></div>
+</body>
+</html>
