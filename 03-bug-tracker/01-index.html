@@ -65,7 +65,8 @@
 			_list = [];
 
 			addNew(bugName){
-				this._list.push(bugName);
+				let newBug = new BugModel(bugName);
+				this._list.push(newBug);
 				this.triggerChange();
 			}
 
@@ -74,17 +75,34 @@
 			}
 		}
 
+		class BugModel{
+			name = '';
+			isClosed = false;
+
+			constructor(name){
+				this.name = name;
+			}
+
+			toggle(){
+				this.isClosed = !this.isClosed;
+			}
+		}
 
 		class BugTracker extends React.Component{
 			state = { newBugName : '' };
 			onAddNewClick = () => {
 				this.props.bugsCollection.addNew(this.state.newBugName);
 			}
+			onBugNameClick = () => {
+				console.log('a bug is clicked');
+			}
 			render(){
 				let bugs = this.props.bugsCollection.getAll();
 				let bugItems = bugs.map((bug, index) => (
 					<li key={index}>
-						<span className="bugname">{bug}</span>
+						<span className="bugname" onClick={this.onBugNameClick}>
+							{JSON.stringify(bug)}
+						</span>
 					</li>
 				))
 				return(
