@@ -12,14 +12,17 @@ import BugList from './views/BugList';
 
 class BugTracker extends Component{
 	render(){
-		let { bugs, toggle, addNew, removeClosed } = this.props;
+		let { bugs, toggle, addNew, removeClosed,load } = this.props;
 		return(
-			<div>
-				<BugStats bugs={bugs} />
-				<BugSort />
-				<BugEdit addNew={addNew} />
-				<BugList {...{bugs, toggle, removeClosed}} />
-			</div>
+			<>
+				<input type="button" value="Load" onClick={load} />
+				<div>
+					<BugStats bugs={bugs} />
+					<BugSort />
+					<BugEdit addNew={addNew} />
+					<BugList {...{bugs, toggle, removeClosed}} />
+				</div>
+			</>
 		)
 	}
 }
