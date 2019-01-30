@@ -61,6 +61,11 @@
 				let toggledBug = { ...bugToToggle, isClosed : !bugToToggle.isClosed};
 				let action = { type : 'REPLACE', payload : {oldBug : bugToToggle, newBug : toggledBug}};
 				return action;
+			},
+			removeClosed(bugs){
+				let closedBugs = bugs.filter(bug => bug.isClosed);
+				let action = { type : 'REMOVE_ALL', payload : closedBugs};
+				return action;
 			}
 		}
 
@@ -74,6 +79,11 @@
 				let {oldBug, newBug} = action.payload;
 				let newState = currentState.map(bug => bug === oldBug ? newBug : bug);
 				return newState;
+			}
+			if (action.type === 'REMOVE_ALL'){
+				let bugsToRemove = action.payload;
+				let newState = currentState.filter(bug => bugsToRemove.indexOf(bug) === -1);
+				return newState; 
 			}
 			return currentState;
 		}
@@ -100,7 +110,7 @@
 			}
 
 			onRemoveClosedClick = () => {
-				
+				this.props.removeClosed(this.props.bugs);
 			}
 			
 			render(){
