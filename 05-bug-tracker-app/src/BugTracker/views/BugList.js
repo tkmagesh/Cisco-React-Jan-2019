@@ -6,7 +6,7 @@ class BugList extends Component{
 		this.props.removeClosed(this.props.bugs);
 	}
 	render(){
-		let { bugs, toggle, removeClosed } = this.props;
+		let { bugs, toggle } = this.props;
 		let bugItems = bugs.map((bug, index) => (
 			<BugItem key={index} bug={bug} toggle={toggle}/>
 		))
