@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>State Manager</title>
+	<script src="stateManager.js"></script>
+	<script src="react.development.js"></script>
+	<script src="react-dom.development.js"></script>
+	<script src="babel.min.js"></script>
+	<script type="text/babel">
+		function spinnerReducer(currentState = 0, action){
+			if (action.type === 'UP')
+				return currentState + action.payload;
+			if (action.type === 'DOWN')
+				return currentState - action.payload;
+			if (action.type === "DOUBLE_UP"){
+				return currentState * 2;
+			}
+			if (action.type === 'DOUBLE_DOWN'){
+				return currentState / 2;
+			}
+			return currentState;
+		}
+
+		class Spinner extends React.Component{
+			txtDeltaRef = React.createRef();
+
+			onDownClick = () => {
+				this.props.down(this.txtDeltaRef.current.valueAsNumber || 1);
+			}
+			onUpClick = () => {
+				this.props.up(this.txtDeltaRef.current.valueAsNumber || 1);
+			}
+			onDoubleUpClick = ()=> {
+				this.props.doubleUp();
+			}
+			onDoubleDownClick = ()=> {
+				this.props.doubleDown();
+			}
+			render(){
+				let value = this.props.spinnerValue;
+				return(
+					<div>
+						<label>Delta :</label>
+						<input type="number" ref={this.txtDeltaRef}/>
+						<br/>
+						<input type="button" value="DOUBLE DOWN" onClick={this.onDoubleDownClick} />
+						<input type="button" value="DOWN" onClick={this.onDownClick}/>
+						<span> [ {value} ] </span>
+						<input type="button" value="UP" onClick={this.onUpClick}/>
+						<input type="button" value="DOUBLE UP" onClick={this.onDoubleUpClick} />
+					</div>
+				)
+			}
+		}
+
+		let spinnerActionCreators = {
+			up(delta = 1){
+				let up_action = { type : 'UP', payload : delta };
+				return up_action;
+			},
+			down(delta = 1){
+				let down_action = { type : 'DOWN', payload : delta };
+				return down_action;
+			},
+			doubleUp(){
+				let doubleUp_action = { type : 'DOUBLE_UP'};
+				return doubleUp_action;
+			},
+			doubleDown(){
+				let doubleDown_action = { type : 'DOUBLE_DOWN'};
+				return doubleDown_action;
+			}
+		};
+
+
+
+
+		var store = SM.createStore(spinnerReducer);
+		var spinnerActions = SM.bindActionCreators(spinnerActionCreators, store.dispatch);
+
+		function renderSpinner(){
+			var spinnerValue = store.getState();
+			ReactDOM.render(<Spinner spinnerValue={spinnerValue} {...spinnerActions} />,
+				document.getElementById('root'));
+		}
+		renderSpinner();
+		store.subscribe(renderSpinner);
+		
+	</script>
+</head>
+<body>
+	<div id="root"></div>
+</body>
+</html>
