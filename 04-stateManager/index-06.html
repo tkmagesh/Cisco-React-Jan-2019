@@ -57,22 +57,11 @@
 			}
 		};
 
-		function bindActionCreators(actionCreators, dispatch){
-			return {
-				up(){
-					let action = actionCreators.up();
-					dispatch(action);
-				},
-				down(){
-					let action = actionCreators.down();
-					dispatch(action);
-				}
-			}
-		}
+
 
 
 		var store = SM.createStore(spinnerReducer);
-		var spinnerActions = bindActionCreators(spinnerActionCreators, store.dispatch);
+		var spinnerActions = SM.bindActionCreators(spinnerActionCreators, store.dispatch);
 
 		function renderSpinner(){
 			var spinnerValue = store.getState();
